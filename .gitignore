@@ -161,3 +161,5 @@ cython_debug/
 
 # secure-drop
 *.json
+*.pdf
+*.zip
