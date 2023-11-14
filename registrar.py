@@ -43,17 +43,17 @@ def registerUser():
     hashedPassword = bcrypt.hashpw(bytes(password.encode()), bcrypt.gensalt())
     hashedPasswordB64String = base64.encodebytes(hashedPassword).decode()
 
-    # Construct the new user object    
+    # Construct the new user object
     newUser = {"email": email, "password": hashedPasswordB64String, "fullName": fullName}
 
     # Update credentials json file
     data = loadCredentialsData()
-    
+
     # Make sure the user isn't already registered
     if [user for user in data["users"] if user["email"] == email]:
         print("There is already a user registered with that email.")
         return
-    
+
     data["users"].append(newUser)
 
     with open(CREDENTIALS_FILE_NAME, "w") as fp:
@@ -73,23 +73,23 @@ def verifyUser():
 
     # Check to see if the user exists
     user = [user for user in data["users"] if user["email"] == email][0]
-    
+
     hashedPasswordB64String: str = user["password"]
     hashedPassword = base64.decodebytes(hashedPasswordB64String.encode())
-    
+
     if user and bcrypt.checkpw(password.encode(), hashedPassword):
         print("Username and password verified, welcome!")
-    else:
-        print("Error: Unable to verify user, incorrect username or password provided.")
+        return True
 
-    print()
+    print("Error: Unable to verify user, incorrect username or password provided.")
+    return False
 
 
 def loginRoutine():
 
     # Load in credentials data
     data = loadCredentialsData()
-    
+
     # If there are no users registered
     noUsersRegistered = (len(data["users"]) == 0)
     if noUsersRegistered:
@@ -102,5 +102,3 @@ def loginRoutine():
         registerUser()
     elif noUsersRegistered:
         exit()
-        
-    verifyUser()
