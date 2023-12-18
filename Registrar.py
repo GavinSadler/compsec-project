@@ -10,7 +10,7 @@ def registerUser():
     Returns:
         DataManager.UserInstance | None: UserInstance on successful registration, None if there was some error registering the user
     """
-    
+
     fullName = input("Enter full name: ")
     email = input("Enter email address: ").lower()
 
@@ -60,7 +60,7 @@ def loginUser():
     Returns:
         DataManager.UserInstance | None: UserInstance on successful login, None if there was some error registering the user
     """
-    
+
     email = input("Enter email address: ")
     password = getpass.getpass("Enter password: ")
 
@@ -83,7 +83,7 @@ def startRoutine() -> DataManager.UserInstance:
     Returns:
         DataManager.UserInstance: The user who shall be logged into the shell
     """
-    
+
     # Load in credentials data
     data = DataManager.loadFile()
 
@@ -97,17 +97,17 @@ def startRoutine() -> DataManager.UserInstance:
 
     if registerNewUser:
         user = registerUser()
-        
+
         if user != None:
             return user
-        
+
         exit()
     elif noUsersRegistered:
         exit() # In this case, there are no registered users and the user does not want to register a new user, so we exit
     else:
         user = loginUser()
-        
+
         if user != None:
             return user
-        
+
         exit()
