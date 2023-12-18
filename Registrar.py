@@ -97,25 +97,26 @@ def startRoutine() -> DataManager.UserInstance:
 
     # If there are no users registered
     noUsersRegistered = len(data["users"]) == 0
-    if noUsersRegistered:
+    registerNewUser: bool = False
+
+    if noUsersRegistered: # There are no user registered
         print("No users are registered with this client.")
+        registerNewUser = input("Do you want to register a new user (y/n)? ").lower() == "y"
 
-    registerNewUser = input("Do you want to register a new user (y/n)? ").lower() == "y"
-    print()
+        if registerNewUser: # We create a new user
+            user = registerUser()
 
-    if registerNewUser:
-        user = registerUser()
+            if user != None:
+                return user
 
-        if user != None:
-            return user
-
-        exit()
-    elif noUsersRegistered:
-        exit() # In this case, there are no registered users and the user does not want to register a new user, so we exit
-    else:
+            exit()
+        else: # In this case, there are no registered users and the user does not want to register a new user, so we exit
+            exit()
+    else: # There are user registered
         user = loginUser()
 
         if user != None:
             return user
 
         exit()
+
