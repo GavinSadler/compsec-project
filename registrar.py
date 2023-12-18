@@ -84,6 +84,14 @@ def startRoutine() -> DataManager.UserInstance:
         DataManager.UserInstance: The user who shall be logged into the shell
     """
     
+    print()
+    
+    print("=================")
+    print("   SECURE DROP   ")
+    print("=================")
+
+    print()
+    
     # Load in credentials data
     data = DataManager.loadFile()
 
