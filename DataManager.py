@@ -1,11 +1,11 @@
-import base64
-import os
-import json
-import bcrypt
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+import base64  # Encoding/decoding encrypted data using B64
+import json  # Used to serialize user
+import os  # File I/O
+import bcrypt  # Used to encrypt passwords and create salts
+from cryptography.fernet import Fernet  # Used to encrypt/decrypt personal user data
+from cryptography.hazmat.primitives import hashes  # Used to create encryption/decryption keys
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC  # Used to create encryption/decryption keys
 
 # File to hold all of the userdata
 DATA_FILE_NAME = "userdata.json"
@@ -70,16 +70,15 @@ def registerUser(email: str, password: str):
         email (string): the email the user will log in with
         password (string): the password the user will log in with
 
-    Returns:
-        Boolean: True if registration was a success, False otherwise
+    Raises:
+            RuntimeError: If attempting to register a user who is already registered
     """
 
     email = email.lower()
 
     # Make sure the user isn't already registered
     if userExists(email):
-        print("ERROR: There is already a user registered with that email")
-        return False
+        raise RuntimeError(f"There is already a user registered with the email '{email}'")
 
     # Hash password and salt using bcrypt and then encode it with base64 so we can store it in json
     salt = bcrypt.gensalt()
@@ -101,12 +100,10 @@ def registerUser(email: str, password: str):
 
     saveFile(data)
 
-    return True
-
 
 class UserInstance:
     """
-        UserInstance can manage encrypted userdata for access during runtime
+    UserInstance can manage encrypted userdata for access during runtime
     """
 
     email: str
@@ -158,12 +155,10 @@ class UserInstance:
         Returns:
             Any: the decrypted and decoded user data object
         """
-        
+
         data = loadFile()
 
-        userDataEncrypted: str = [
-            user for user in data["users"] if user["email"] == self.email
-        ][0]["data"]
+        userDataEncrypted: str = [user for user in data["users"] if user["email"] == self.email][0]["data"]
 
         # If user's data field is empty, decryption will fail, so return an empty dict
         if userDataEncrypted == "":
@@ -181,15 +176,13 @@ class UserInstance:
         Args:
             userData (Any): a json-serializable object that will be enecrypted and stored
         """
-        
+
         data = loadFile()
 
         userDataSerialized = json.dumps(userData)
 
         userDataEncrypted = self.encryptor.encrypt(userDataSerialized.encode())
 
-        [user for user in data["users"] if user["email"] == self.email][0][
-            "data"
-        ] = userDataEncrypted.decode()
+        [user for user in data["users"] if user["email"] == self.email][0]["data"] = userDataEncrypted.decode()
 
         saveFile(data)
