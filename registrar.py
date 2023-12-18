@@ -72,6 +72,10 @@ def verifyUser():
     data = loadCredentialsData()
 
     # Check to see if the user exists
+    if len([user for user in data["users"] if user["email"] == email]) == 0:
+        print(f"Error: user with email '{email}' is not registered with this system")
+        return False
+    
     user = [user for user in data["users"] if user["email"] == email][0]
 
     hashedPasswordB64String: str = user["password"]
