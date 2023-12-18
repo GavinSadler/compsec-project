@@ -1,8 +1,9 @@
 
-import registrar
-import shell
+import Registrar
+import Shell
 
 if __name__ == "__main__":
-    registrar.loginRoutine()
-    if(registrar.verifyUser()):
-        shell.openShell()
+
+    user = Registrar.startRoutine()
+    Shell.openShell(user)
+    

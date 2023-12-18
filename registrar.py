@@ -48,8 +48,8 @@ def registerUser():
         print(f"ERROR: {e}")
         return
 
-    # Set the fullName field
-    user.setUserData({"fullName": fullName})
+    # Set the fullName field and initialize the contacts field
+    user.setUserData({"fullName": fullName, "contacts" : []})
 
     return user
 
@@ -77,7 +77,7 @@ def loginUser():
     return user
 
 
-def startRoutine():
+def startRoutine() -> DataManager.UserInstance:
     """Routine that runs on the start of the program
 
     Returns:
@@ -96,8 +96,18 @@ def startRoutine():
     print()
 
     if registerNewUser:
-        return registerUser()
+        user = registerUser()
+        
+        if user != None:
+            return user
+        
+        exit()
     elif noUsersRegistered:
         exit() # In this case, there are no registered users and the user does not want to register a new user, so we exit
     else:
-        return loginUser()
+        user = loginUser()
+        
+        if user != None:
+            return user
+        
+        exit()

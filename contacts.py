@@ -1,40 +1,66 @@
-import os
-import json
 
-CONTACTS_FILE_NAME = "contacts.json"
+import DataManager
 
-if not os.path.exists(CONTACTS_FILE_NAME):
-    with open(CONTACTS_FILE_NAME, "w") as file:
-        json.dump({"contacts": {}}, file)
+def addContact(user: DataManager.UserInstance):
+    """Adds a contact to the given user's contact book
+       If the contact already exists, it will not be added
 
-def loadContactData():
-    data = None
-    try:
-        with open(CONTACTS_FILE_NAME, "r") as fp:
-            data = json.load(fp)
-    except Exception as e:
-        print(f"ERROR: unable to load credentials file {CONTACTS_FILE_NAME}, It may be malformed, or corrupted!")
-        exit(1)
-
-    return data
-
-def addContact():
-    name = input("Enter Full Name: ")
+    Args:
+        user (DataManager.UserInstance): The user to add a contact to
+    """
+    
+    fullName = input("Enter Full Name: ")
     email = input("Enter Email Address: ").lower()
 
     print()
 
-    data = loadContactData()
-    data['contacts'][email] = {
-        "name": name
-    }
+    userData: dict = user.getUserData()
+    
+    if len([contact for contact in userData["contacts"] if contact["email"] == email]) != 0:
+        print(f"ERROR: A contact with email {email} already exists")
+        return
 
-    with open(CONTACTS_FILE_NAME, "w") as fp:
-        json.dump(data, fp)
-
+    userData["contacts"].append({"email" : email, "fullName" : fullName})
+    
+    user.setUserData(userData)
+    
     print("Contact added!")
+    
 
-def listContacts():
-    data = loadContactData()
-    for email in data:
-        print(f"{data[email]} <{email}>")
+def removeContact(user: DataManager.UserInstance):
+    """Removes a contact with a provided email
+
+    Args:
+        user (DataManager.UserInstance): The user who is removing the contact
+    """
+    
+    email = input("Enter Email Address: ").lower()
+    
+    print()
+    
+    userData: dict = user.getUserData()
+    
+    matchedContacts = [contact for contact in userData["contacts"] if contact["email"] == email]
+    
+    if len(matchedContacts) == 0:
+        print(f"No contact with the email {email} was found")
+        return
+
+    userData["contacts"][:] = [contact for contact in userData["contacts"] if contact["email"] != email]
+
+
+def listContacts(user: DataManager.UserInstance):
+    """Lists the contacts in a user's contact book
+
+    Args:
+        user (DataManager.UserInstance): The user who's contacts will be listed
+    """
+    
+    userData: dict = user.getUserData()
+    contacts = userData["contacts"]
+    
+    if len(contacts) == 0:
+        print("There are no contacts to list")
+    
+    for contact in contacts:
+        print(f"{contact["fullName"]} <{contact["email"]}>")
