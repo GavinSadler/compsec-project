@@ -83,7 +83,19 @@ def startRoutine() -> DataManager.UserInstance:
     Returns:
         DataManager.UserInstance: The user who shall be logged into the shell
     """
+<<<<<<< HEAD:Registrar.py
 
+=======
+    
+    print()
+    
+    print("=================")
+    print("   SECURE DROP   ")
+    print("=================")
+
+    print()
+    
+>>>>>>> b79010c8075ac7fca8606a8662230a78f31dd645:registrar.py
     # Load in credentials data
     data = DataManager.loadFile()
 
