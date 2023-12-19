@@ -66,15 +66,6 @@ def send(user: DataManager.UserInstance):
             sock.close()
             return
         
-        # Send the file size to the recipient. This will be used to show progress of sending the file
-        sock.send(bytes(os.path.getsize(filepath)))
-        
-        # Make sure the recipient has recieved the checksum and that it responds
-        if sock.recv(1) != b"\x01":
-            print("ERROR: Recipient rejected file")
-            sock.close()
-            return
-        
         while True:
             data = fp.read(DataManager.FILE_PARTITION_SIZE)
             
