@@ -1,5 +1,6 @@
 
 import DataManager
+import Network
 
 def addContact(user: DataManager.UserInstance):
     """Adds a contact to the given user's contact book
@@ -56,11 +57,59 @@ def listContacts(user: DataManager.UserInstance):
         user (DataManager.UserInstance): The user who's contacts will be listed
     """
 
+    # Use UDP to get the list of users
     userData: dict = user.getUserData()
     contacts = userData["contacts"]
 
     if len(contacts) == 0:
         print("There are no contacts to list")
+        return
+
+
+    networkInterface = Network
+    try:
+        print("Looking for active contacts!...")
+        contactData, contactIP = networkInterface.broadcastUDP(f"{user.email}")
+    except TimeoutError:
+        print("Timeout: No user response")
+        return
+
+    contactData = contactData.decode('utf-8')
+    print(f"{contactData}:{contactIP}")
 
     for contact in contacts:
-        print(f"{contact['fullName']} <{contact['email']}>")
+        if contact['email'] == contactData:
+            user.tempContactList.append((contact, contactIP))
+            print(f"{contact['fullName']} <{contact['email']}>")
+
+def verifyContact(email, user: DataManager.UserInstance):
+    userData = user.getUserData()
+    contacts = userData["contacts"]
+
+    verify = False
+
+    for contact in contacts:
+        if email.decode('utf-8') == contact['email']:
+            verify = True
+            return (verify, user.email)
+
+    return (verify, "")
+
+def send(user: DataManager.UserInstance):
+    if len(user.tempContactList) == 0:
+        print("No active users, try searching your contacts using 'list'")
+        return
+
+    print("Listing online contacts:")
+
+    for index, info in enumerate(user.tempContactList):
+        contact, ipInfo = info
+        print(f"{index}. {contact['fullName']} <{contact['email']}>")
+
+    contactIndex = input("Select the contact you want to send a message: ")
+    contact, ipInfo = user.tempContactList[int(contactIndex)]
+
+    message = input("Message: ")
+
+    networkInterface = Network
+    networkInterface.sendTCP(ipInfo, message)

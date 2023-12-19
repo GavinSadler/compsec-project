@@ -107,6 +107,7 @@ class UserInstance:
     """
 
     email: str
+    tempContactList: list
     encryptor: Fernet
 
     def __init__(self, email: str, password: str):
@@ -148,6 +149,7 @@ class UserInstance:
 
         self.encryptor = Fernet(keyB64)
         self.email = email
+        self.tempContactList = []
 
     def getUserData(self):
         """Returns encrypted user data

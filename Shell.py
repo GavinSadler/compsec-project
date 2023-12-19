@@ -1,6 +1,8 @@
 
 import Contacts
 import DataManager
+import Network
+import threading
 
 def printHelp():
     # TODO: Do help printing with the actual values
@@ -11,9 +13,15 @@ def printHelp():
     print('\t"exit"\t\t-> Exit SecureDrop')
 
 def openShell(user: DataManager.UserInstance):
+    UDPThread = threading.Thread(
+            target=Network.listenUDP,
+            args=(Contacts.verifyContact, user)
+    )
+    UDPThread.start()
     while True:
         command = input("secure_drop> ")
         if command == "exit":
+            UDPThread.join()
             break
         elif command == "help":
             printHelp()
@@ -24,6 +32,6 @@ def openShell(user: DataManager.UserInstance):
         elif command == "list":
             Contacts.listContacts(user)
         elif command == "send":
-            print("--- WIP: please be patient ---")
+            Contacts.send(user)
         else:
             print(f"Command '{command}' does not exist: please refer to 'help' for available commands")
