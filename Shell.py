@@ -1,6 +1,8 @@
 
 import Contacts
 import DataManager
+import Send
+import Recieve
 
 def printHelp():
     # TODO: Do help printing with the actual values
@@ -24,6 +26,8 @@ def openShell(user: DataManager.UserInstance):
         elif command == "list":
             Contacts.listContacts(user)
         elif command == "send":
-            print("--- WIP: please be patient ---")
+            Send.send(user)
+        elif command == "recieve":
+            Recieve.recieve(user)
         else:
             print(f"Command '{command}' does not exist: please refer to 'help' for available commands")
