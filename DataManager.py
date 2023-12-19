@@ -1,4 +1,3 @@
-
 import base64  # Encoding/decoding encrypted data using B64
 import json  # Used to serialize user
 import os  # File I/O
@@ -6,15 +5,41 @@ import bcrypt  # Used to encrypt passwords and create salts
 from cryptography.fernet import Fernet  # Used to encrypt/decrypt personal user data
 from cryptography.hazmat.primitives import hashes  # Used to create encryption/decryption keys
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC  # Used to create encryption/decryption keys
+import hashlib # Used to calculate file checksums
 
-# File to hold all of the userdata
-DATA_FILE_NAME = "userdata.json"
+
+DATA_FILE_NAME = "userdata.json"  # File to hold all of the userdata
+FILE_PARTITION_SIZE = 2**14  # How many bytes to partition files during sending/recieving operations, currently 16kb
 
 
 # Create a userdata file if it doesn't already exist
 if not os.path.exists(DATA_FILE_NAME):
     with open(DATA_FILE_NAME, "w") as file:
         json.dump({"users": []}, file)
+
+
+def getChecksum(filepath):
+    """Returns the hexdigest of the given file using SHA256
+
+    Args:
+        filepath (str): The path of the file to generate a checksum for
+
+    Returns:
+        str: the hex digest of the file
+    """
+    
+    sha256 = hashlib.sha256()
+
+    with open(filepath, "rb") as fp:
+        
+        # Read kb by kb
+        data = fp.read()
+        
+        while data:
+            sha256.update(data)
+            data = fp.read(FILE_PARTITION_SIZE)
+
+    return sha256.hexdigest()
 
 
 def loadFile():
@@ -166,7 +191,7 @@ class UserInstance:
         if userDataEncrypted == "":
             return {}
 
-        rawData = self.encryptor.decrypt(userDataEncrypted.encode('utf-8'))
+        rawData = self.encryptor.decrypt(userDataEncrypted.encode("utf-8"))
 
         data = json.loads(rawData)
 
@@ -183,7 +208,7 @@ class UserInstance:
 
         userDataSerialized = json.dumps(userData)
 
-        userDataEncrypted = self.encryptor.encrypt(userDataSerialized.encode('utf-8'))
+        userDataEncrypted = self.encryptor.encrypt(userDataSerialized.encode("utf-8"))
 
         [user for user in data["users"] if user["email"] == self.email][0]["data"] = userDataEncrypted.decode()
 
