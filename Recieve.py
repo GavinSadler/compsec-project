@@ -76,5 +76,8 @@ def recieve(user: DataManager.UserInstance):
         print()
         print(f"Sent checksum:\t{fileChecksum}")
         print(f"Recieved checksum:\t{recievedChecksum}")
+        print()
+        print("Deleting copied file")
+        os.remove(RECIEVED_FILES_DIR + "/" + filename)
 
     sock.close()
