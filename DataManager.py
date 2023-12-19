@@ -164,7 +164,7 @@ class UserInstance:
         if userDataEncrypted == "":
             return {}
 
-        rawData = self.encryptor.decrypt(userDataEncrypted)
+        rawData = self.encryptor.decrypt(userDataEncrypted.encode('utf-8'))
 
         data = json.loads(rawData)
 
@@ -181,7 +181,7 @@ class UserInstance:
 
         userDataSerialized = json.dumps(userData)
 
-        userDataEncrypted = self.encryptor.encrypt(userDataSerialized.encode())
+        userDataEncrypted = self.encryptor.encrypt(userDataSerialized.encode('utf-8'))
 
         [user for user in data["users"] if user["email"] == self.email][0]["data"] = userDataEncrypted.decode()
 

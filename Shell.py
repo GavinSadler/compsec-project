@@ -4,11 +4,11 @@ import DataManager
 
 def printHelp():
     # TODO: Do help printing with the actual values
-    print('\t"add"\t-> Add a new contact')
+    print('\t"add"\t\t-> Add a new contact')
     print('\t"remove"\t-> Removes a contact')
-    print('\t"list"\t-> List all online contacts')
-    print('\t"send"\t-> Transfer file on contact')
-    print('\t"exit"\t-> Exit SecureDrop')
+    print('\t"list"\t\t-> List all online contacts')
+    print('\t"send"\t\t-> Transfer file on contact')
+    print('\t"exit"\t\t-> Exit SecureDrop')
 
 def openShell(user: DataManager.UserInstance):
     while True:
